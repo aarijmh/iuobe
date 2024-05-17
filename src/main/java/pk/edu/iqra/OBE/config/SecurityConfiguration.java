@@ -1,26 +1,37 @@
 package pk.edu.iqra.OBE.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+    @Qualifier("customUserDetailsService")
+    UserDetailsService userDetailsService;
+
+    CustomSuccessHandler customSuccessHandler;
+
     @Autowired
-    private DataSource dataSource;
+    public SecurityConfiguration(UserDetailsService userDetailsService,
+                                 CustomSuccessHandler customSuccessHandler) {
+        this.userDetailsService = userDetailsService;
+        this.customSuccessHandler = customSuccessHandler;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,21 +46,49 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user = User.w
-                .passwordEncoder(passwordEncoder())
-                .username("user")
-                .password("password")
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        DelegatingPasswordEncoder delPasswordEncoder = (DelegatingPasswordEncoder) PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        delPasswordEncoder.setDefaultPasswordEncoderForMatches(bcryptPasswordEncoder);
+        return delPasswordEncoder;
     }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .formLogin(form-> form.loginPage("/login").successHandler(customSuccessHandler).usernameParameter("username").passwordParameter("password"))
+                .authorizeHttpRequests((authz) -> {
+                    try {
+                        authz
+
+                                .requestMatchers("/universityAdmin/**").hasAnyRole("UNIVERSITY_ADMIN")
+                                .requestMatchers("/oricAdmin/**").hasAnyRole("UNIVERSITY_ADMIN", "CAMPUS_ADMIN")
+                                .requestMatchers("/campusAdmin/**").hasAnyRole("UNIVERSITY_ADMIN", "CAMPUS_ADMIN")
+                                .requestMatchers("/data/**").hasAnyRole("UNIVERSITY_ADMIN", "CAMPUS_ADMIN")
+                                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                                .requestMatchers("/**").permitAll()
+                                .anyRequest().authenticated();
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        ).exceptionHandling(exception -> exception.accessDeniedPage("/accessDenied"));
+
+        return http.build();
+    }
+
 }
 
 
