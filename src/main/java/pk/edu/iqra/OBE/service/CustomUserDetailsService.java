@@ -9,9 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pk.edu.iqra.OBE.details.CustomUserDetails;
 import pk.edu.iqra.OBE.model.User;
-import pk.edu.iqra.oric.domain.Role;
-import pk.edu.iqra.oric.domain.User;
-import pk.edu.iqra.oric.utility.CustomUserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
