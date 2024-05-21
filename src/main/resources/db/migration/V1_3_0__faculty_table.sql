@@ -1,4 +1,4 @@
-CREATE TABLE `obe`.`user` (
+CREATE TABLE IF NOT EXISTS `obe`.`user` (
                               `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
                               `first_name` VARCHAR(45) NULL,
                               `middle_name` VARCHAR(45) NULL,
@@ -10,13 +10,13 @@ CREATE TABLE `obe`.`user` (
                               `date_created` DATETIME NULL,
                               PRIMARY KEY (`id`));
 
-CREATE TABLE `obe`.`roles` (
+CREATE TABLE IF NOT EXISTS  `obe`.`roles` (
                                `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
                                `roles` VARCHAR(45) NOT NULL,
                                `description` VARCHAR(45) NULL,
                                PRIMARY KEY (`id`));
 
-CREATE TABLE `obe`.`user_roles` (
+CREATE TABLE IF NOT EXISTS  `obe`.`user_roles` (
                                     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
                                     `user_id` INT UNSIGNED NOT NULL,
                                     `roles` INT UNSIGNED NOT NULL,

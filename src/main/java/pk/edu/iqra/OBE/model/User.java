@@ -1,20 +1,25 @@
 package pk.edu.iqra.OBE.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.time.LocalDate;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import pk.edu.iqra.OBE.model.UserRole;
 
+import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "user")
-@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
-
-    @Column(name = "salutation", length = 45)
-    private String salutation;
+    @Column(name = "id", columnDefinition = "int UNSIGNED not null")
+    private Long id;
 
     @Column(name = "first_name", length = 45)
     private String firstName;
@@ -25,47 +30,22 @@ public class User {
     @Column(name = "last_name", length = 45)
     private String lastName;
 
-    @Column(name = "email", length = 45)
+    @Column(name = "username", nullable = false, length = 100)
+    private String username;
+
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "phone", length = 45)
-    private String phone;
-
-    @Column(name = "mobile", length = 45)
-    private String mobile;
-
-    @Column(name = "permanent_status", length = 45)
-    private String permanentStatus;
-
-    @Column(name = "qualification_level", length = 45)
-    private String qualificationLevel;
-
-    @Column(name = "qualification_title", length = 45)
-    private String qualificationTitle;
-
-    @Column(name = "cnic", length = 45)
-    private String cnic;
-
-    @Column(name = "personal_url", length = 45)
-    private String personalUrl;
-
-    @Column(name = "password", length = 200)
+    @Column(name = "password", nullable = false, length = 200)
     private String password;
 
-    @Column(name = "field_of_study", length = 100)
-    private String fieldOfStudy;
+    @Column(name = "enabled")
+    private Boolean enabled;
 
-    @Column(name = "status")
-    private Boolean status;
+    @Column(name = "date_created")
+    private Instant dateCreated;
 
-    @Column(name = "dob")
-    private LocalDate dob;
-
-    @Column(name = "joinning_date")
-    private LocalDate joinningDate;
-
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
-
+    @OneToMany(mappedBy = "user")
+    private Set<UserRole> userRoles = new LinkedHashSet<>();
 
 }

@@ -33,18 +33,6 @@ public class SecurityConfiguration {
         this.customSuccessHandler = customSuccessHandler;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // @formatter:off
-        http
-                .authorizeHttpRequests((authorize) -> authorize
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults());
-        // @formatter:on
-        return http.build();
-    }
 
 
     @Bean
@@ -72,7 +60,7 @@ public class SecurityConfiguration {
                     try {
                         authz
 
-                                .requestMatchers("/universityAdmin/**").hasAnyRole("UNIVERSITY_ADMIN")
+                                .requestMatchers("/faculty/**").hasAnyRole("FACULTY")
                                 .requestMatchers("/oricAdmin/**").hasAnyRole("UNIVERSITY_ADMIN", "CAMPUS_ADMIN")
                                 .requestMatchers("/campusAdmin/**").hasAnyRole("UNIVERSITY_ADMIN", "CAMPUS_ADMIN")
                                 .requestMatchers("/data/**").hasAnyRole("UNIVERSITY_ADMIN", "CAMPUS_ADMIN")

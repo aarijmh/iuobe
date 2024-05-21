@@ -10,276 +10,41 @@
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="">
 <meta name="author" content="">
+	<link href="/resources/static/css/login.css" rel="stylesheet"  crossorigin="anonymous">
+<title>Login</title>
 
-<title>Course Files Converters</title>
-
-<!-- Bootstrap core CSS -->
-<link href="/resources/static/css/bootstrap.css" rel="stylesheet">
-
-<!-- Custom styles for this template -->
-<link href="/resources/static/css/simple-sidebar.css" rel="stylesheet">
 
 </head>
 
 <body>
-
-	<div class="d-flex" id="wrapper">
-
-		<!-- Sidebar -->
-		<div th:insert="navBar/leftBar"></div>
-		<!-- /#sidebar-wrapper -->
-
-		<!-- Page Content -->
-		<div id="page-content-wrapper">
-
-
-
-			<div class="container-fluid">
-				<h1 class="mt-4">Upload Files</h1>
+<div class="sidenav">
+	<div class="login-main-text">
+		<h2>Application<br> Login Page</h2>
+		<p>Login or register from here to access.</p>
+	</div>
+</div>
+<div class="main">
+	<div class="col-md-6 col-sm-12">
+		<div class="login-form">
+			<form th:action="@{/login}" method="post">
 				<div class="form-group">
-					<label for="userFile">Upload User File: Columns should be
-						the following <br>
-						External_Person_Key,User_ID,Passwd,title,Firstname,Lastname,Email,Institution_Role,available_ind,row_status,campus,Department,city,job_title,student_id,Data_Source_Key
-					</label> <input type="file" class="form-control" id="userFile"
-						accept=".xls, .xlsx">
+					<label>User Name</label>
+					<input type="text" class="form-control" placeholder="User Name" id="username" name="username">
 				</div>
 				<div class="form-group">
-					<label for="courseFile">Upload Course File: Columns should
-						be the following <br>
-						external_course_key,course_id,course_name,description,row_status,available_ind,data_source_key
-					</label> <input type="file" class="form-control" id="courseFile"
-						accept=".xls, .xlsx">
+					<label>Password</label>
+					<input type="password" class="form-control" placeholder="Password" id="password" name="password">
 				</div>
-				<div class="form-group">
-					<label for="enrollementFile">Upload Enrollment File:
-						Columns should be the following <br>
-						external_course_key,external_person_key,role,row_status,available_ind,data_source_key
-					</label> <input type="file" class="form-control" id="enrollementFile"
-						accept=".xls, .xlsx">
-						 
-						<label for="edpCode"></label>Edp Codes? <input type ="checkbox" id= "edpCode" >
-						<label for="ignoreEnrollements"></label>Ignore Missing Students? <input type ="checkbox" id= "ignoreEnrollements" >
-				</div>
-
-				<div class="form-group">
-					<label for="outputFile">Paste the output directory path (if
-						not output directory is selected then files will be exported to
-						C:\\temp\\output)</label> <input type="text" class="form-control"
-						id="outputFile">
-				</div>
-				
-				<div class="form-group">
-				<div class="row">
-					<div class="col-md-3">
-					<label for="co">Select Campus</label>
-				<select class="form-control" id="selectCampus" onchange="javascript:changeCollections();">
-						<option class="form-control"
-							th:each="buyer :  ${campuses}"
-							th:value="${buyer.id}" th:utext="${buyer.campusName}" />
-					</select>
-					
-					</div>
-					
-				<div class="col-md-3">
-					<label for="co">Select Term</label>
-				<select class="form-control" id="selectTerm">
-						<option class="form-control"
-							th:each="buyer :  ${terms}"
-							th:value="${buyer.id}" th:utext="${buyer.name}" th:attr="data-campus=${buyer.campus.id}"/>
-					</select>
-					
-					</div>
-					
-					<div class="col-md-3">
-					<label for="co">Select Data Source Key</label>
-				<select class="form-control" id="selectDsk">
-						<option class="form-control"
-							th:each="buyer :  ${dsks}"
-							th:value="${buyer.dskId}" th:utext="${buyer.dsk}"   th:attr="data-campus=${buyer.campusId}"/>
-					</select>
-					
-					</div>
-					
-				<div class="col-md-3">
-					<label for="co">Select Template Course</label>
-				<select class="form-control" id="selecTemplateCourse">
-						<option class="form-control"
-							th:each="buyer :  ${templateCourses}"
-							th:value="${buyer.id}" th:utext="|${buyer.name} -- ${buyer.description}|" />
-					</select>
-					
-					</div>
-				</div>
-					
-					
-				</div>
-
-				<div class="form-group">
-
-					<button id="btnCreate" class="form-control">Create CSV
-						Files</button>
-				</div>
-				<div class="form-group">
-					<label for="fileLinks">File Links</label>
-					<div id="fileLinks"></div>
-				</div>
-				<div class="form-group">
-					<label for="outputFile">Messages</label>
-					<textarea id="messageArea" class="form-control" rows="10"></textarea>
-				</div>
-				
-
-			</div>
+				<button type="submit" class="btn btn-black">Login</button>
+				<button type="submit" class="btn btn-secondary">Register</button>
+			</form>
 		</div>
-		<!-- /#page-content-wrapper -->
-
 	</div>
-	<!-- /#wrapper -->
-	<div class="toast">
-		<div class="toast-header">File Successfully Generated</div>
-		<div class="toast-body">File Successfully Generated</div>
-	</div>
+</div>
 
-	<!-- Bootstrap core JavaScript -->
-	<script src="/resources/static/js/jquery.js"></script>
-	<script src="/resources/static/js/bootstrap.bundle.min.js"></script>
-	<script src="/resources/static/js/sweetalert2.js"></script>
-
-	<!-- Menu Toggle Script -->
+<!-- Menu Toggle Script -->
 	<script>
-		$("#menu-toggle").click(function(e) {
-			e.preventDefault();
-			$("#wrapper").toggleClass("toggled");
-		});
-		
-		jQuery.fn.outerHTML = function() {
-			return jQuery('<div />').append(this.eq(0).clone()).html();
-		};
-		
-		function runFile(file,campus){
-			let formD = new FormData();
-			formD.append("file",file)
-			formD.append("path",fileMap.get(file.trim()))
-			formD.append("campus",campus)
-			$.ajax({
-				type : "POST",
-				url : "/sisgen/runFile",
-				contentType : false,
-				processData : false,
-				data : formD,
-				beforeSend : function(xhr) {
 
-				},
-				success : function(response) {
-					$("#messageArea").val(response);
-					Swal.fire({
-						title : 'Success!',
-						text : 'Files Uploaded',
-						icon : 'success',
-						confirmButtonText : 'Cool'
-					})
-				},
-				error : function(jqXHR, textStatus, errorThrown) {
-					alert("File not uploaded successfully");
-				}
-			});			
-		}
-		
-		var fileMap = new Map();
-		var campuses = [];
-		var terms = [];
-		var dsks = [];
-		
-		function changeTerm(){
-			let comb = $("#selectTerm").empty();
-			let campusid = parseInt($("#selectCampus").val());
-			$.each(terms,function(k,v){
-				if(v.campus.id == campusid){
-					let opt = $("<option value='"+v.id+"'>"+v.name+"</option>")
-					$(comb).append(opt);
-				}				
-			});
-		}
-		function changeDsk(){
-			let comb = $("#selectDsk").empty();
-			let campusid = parseInt($("#selectCampus").val());
-			$.each(dsks,function(k,v){
-				if(v.campusId == campusid){
-					let opt = $("<option value='"+v.dskId+"'>"+v.dsk+"</option>")
-					$(comb).append(opt);
-				}				
-			});
-		}
-		
-		function changeCollections(){
-			changeTerm();
-			changeDsk();			
-		}
-		$(document).ready(
-				function() {
-					$("#csvLink").removeClass("bg-light");
-					$("#csvLink").addClass("bg-dark");
-					$("#csvLink").addClass("active");
-					terms = JSON.parse('[[${termString}]]'.replace(/&quot;/g, '"'));
-					dsks = JSON.parse('[[${dskString}]]'.replace(/&quot;/g, '"'));
-					
-					changeCollections();
-					
-					$("#btnCreate").click(
-							function(evt) {
-								
-								
-
-								if ($("#userFile").val().trim() == "" && $("#courseFile").val().trim() == ""
-										&& $("#enrollementFile").val().trim() == "") {
-									alert("Please select a file before converting");
-									return false;
-								}
-
-								let fd = new FormData();
-								fd.append("userFile", $("#userFile")[0].files[0]);
-								fd.append("courseFile", $("#courseFile")[0].files[0]);
-								fd.append("enrollementFile", $("#enrollementFile")[0].files[0]);
-								fd.append("outputFile", $("#outputFile").val());
-								fd.append("campus", $("#selectCampus").val());
-								fd.append("edpCodes",$("#edpCode").prop('checked'));
-								fd.append("ignoreEnrollements",$("#ignoreEnrollements").prop('checked'));
-								fd.append("termId",$("#selectTerm").val());
-								fd.append("dskId",$("#selectDsk").val());
-								fd.append("templateCourseId",$("#selecTemplateCourse").val());
-
-								$.ajax({
-									type : "POST",
-									url : "/sisgen/convertToCSV",
-									contentType : false,
-									processData : false,
-									data : fd,
-									beforeSend : function(xhr) {
-
-									},
-									success : function(response) {
-										$("#messageArea").val(response.message);
-										let i = 0;
-										let a= [];
-										fileMap.clear();
-										for(i = 0; i < response.paths.length; i++){
-											fileMap.set(response.fileName[i].trim(),response.paths[i].trim());
-											a.push('<a href="javascript:runFile(\''+response.fileName[i].trim()+'\','+response.campus+' )">'+response.fileName[i]+'</a>');
-										}
-										$("#fileLinks").html(a.join("<br/>"))
-										Swal.fire({
-											title : 'Success!',
-											text : 'Files successfully generated',
-											icon : 'success',
-											confirmButtonText : 'Cool'
-										})
-									},
-									error : function(jqXHR, textStatus, errorThrown) {
-										alert("File not uploaded successfully");
-									}
-								});
-							});
-				})
 	</script>
 
 </body>

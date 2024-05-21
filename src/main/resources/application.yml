@@ -7,3 +7,10 @@ spring:
   session:
     jdbc:
       initialize-schema: always
+
+  main:
+    allow-bean-definition-overriding: true
+  thymeleaf:
+    check-template-location: false
+server:
+  port: 6060

@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import pk.edu.iqra.OBE.details.CustomUserDetails;
+import pk.edu.iqra.OBE.model.Role;
 import pk.edu.iqra.OBE.model.User;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService{
         System.out.println("User : "+user.getEmail());
 
         
-        	CustomUserDetails customUserDetails = new CustomUserDetails(user.getEmail(), user.getPassword(), user.getStatus(), true, true, true, getGrantedAuthorities(user));
+        	CustomUserDetails customUserDetails = new CustomUserDetails(user.getEmail(), user.getPassword(), user.getEnabled(), true, true, true, getGrantedAuthorities(user));
         	customUserDetails.setId(user.getId());
         	customUserDetails.setName(user.getFirstName());
         	
@@ -44,13 +45,13 @@ public class CustomUserDetailsService implements UserDetailsService{
     }
  
      
-    private List<GrantedAuthority> getGrantedAuthorities(User campusUser){
+    private List<GrantedAuthority> getGrantedAuthorities(User user){
         List<GrantedAuthority> authorities = new ArrayList<>();
          
-//        for(Role role : userService.findUserRolesById(campusUser.getId()))
-//            authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRole()));
+        for(Role role : userService.findUserRolesById(user.getId()))
+            authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRoles()));
        
-        return null;
+        return authorities;
     }
      
 }
